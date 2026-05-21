@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from rail.core.data import TableHandle
-from rail.estimation.algos import sklearn_neurnet
+from rail.estimation.algos.lephare import LephareInformer, LephareEstimator, lsst_default_config
 from rail.utils import catalog_utils
 
 from pz_data_challenge.taskset_1 import run_taskset_1
@@ -11,8 +11,8 @@ from pz_data_challenge.taskset_2 import run_taskset_2
 
 from pz_data_challenge import submit_utils
 
-SUBMISSION_NAME: str = "example"
-SUBMISSION_URL: str = "https://s3df.slac.stanford.edu/people/echarles/submit_example.tgz"
+SUBMISSION_NAME: str = "lephare"
+SUBMISSION_URL: str = "https://github.com/lephare-photoz/pz_data_challenge"
 
 # don't change these
 SUBMIT_DIR: str = f"submissions/{SUBMISSION_NAME}"
@@ -74,7 +74,7 @@ def run_taskset_1_estimation_only(
         be written in qp format.
     """
     test_data = TableHandle("test", path=test_file)
-    estimator = sklearn_neurnet.SklNeurNetEstimator.make_stage(
+    estimator = LephareEstimator.make_stage(
         name="estimate",
         model=model_file,
         output_mode="return",
@@ -113,12 +113,12 @@ def run_taskset_1_training_and_estimation(
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
 
-    informer = sklearn_neurnet.SklNeurNetInformer.make_stage(
+    informer = LephareInformer.make_stage(
         name="inform",
     )
     model = informer.inform(train_data)
 
-    estimator = sklearn_neurnet.SklNeurNetEstimator.make_stage(
+    estimator = LephareEstimator.make_stage(
         name="estimate",
         model=model,
         output_mode="return",
@@ -156,7 +156,7 @@ def run_taskset_2_estimation_only(
         be written in qp format.
     """
     test_data = TableHandle("test", path=test_file)
-    estimator = sklearn_neurnet.SklNeurNetEstimator.make_stage(
+    estimator = LephareEstimator.make_stage(
         name="estimate",
         model=model_file,
         output_mode="return",
@@ -192,12 +192,12 @@ def run_taskset_2_training_and_estimation(
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
 
-    informer = sklearn_neurnet.SklNeurNetInformer.make_stage(
+    informer = LephareInformer.make_stage(
         name="inform",
     )
     model = informer.inform(train_data)
 
-    estimator = sklearn_neurnet.SklNeurNetEstimator.make_stage(
+    estimator = LephareEstimator.make_stage(
         name="estimate",
         model=model,
         output_mode="return",
