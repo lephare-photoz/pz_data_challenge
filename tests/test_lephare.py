@@ -12,7 +12,7 @@ from pz_data_challenge.taskset_2 import run_taskset_2
 from pz_data_challenge import submit_utils
 
 SUBMISSION_NAME: str = "lephare"
-SUBMISSION_URL: str = "https://github.com/lephare-photoz/pz_data_challenge"
+SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/inform_lephare.tgz"
 
 # don't change these
 SUBMIT_DIR: str = f"submissions/{SUBMISSION_NAME}"
