@@ -39,7 +39,7 @@ config.update(
         "ERR_SCALE": "0.02",
         "FILTER_CALIB": "0",
         "FILTER_LIST": lsst_default_config["FILTER_LIST"]
-        + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
+        + ",roman/Roman_WFI.F106.dat,roman/Roman_WFI.F129.dat,roman/Roman_WFI.F158.dat",
     }
 )
 
