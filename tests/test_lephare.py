@@ -110,6 +110,7 @@ def run_taskset_1_estimation_only(
         bands=flux_cols,
         err_bands=flux_err_cols,
         hdf5_groupname="",
+        lephare_config=config.copy(),
     )
     pz_out = estimator.estimate(test_data)
     pz_out.data.ancil["object_id"] = test_data()["object_id"].astype(int)
@@ -209,6 +210,7 @@ def run_taskset_2_estimation_only(
         bands=flux_cols,
         err_bands=flux_err_cols,
         hdf5_groupname="",
+        lephare_config=config.copy(),
     )
     pz_out = estimator.estimate(test_data)
     pz_out.data.ancil["object_id"] = test_data()["object_id"].astype(int)
