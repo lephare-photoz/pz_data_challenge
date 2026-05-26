@@ -68,7 +68,9 @@ def setup_submit_area(request: pytest.FixtureRequest) -> int:
     catalog_utils.load_yaml("tests/catalogs.yaml")
     catalog_utils.apply("cardinal_roman_rubin")
 
-    lp.data_retrieval.get_auxiliary_data(keymap=config)
+    lp.data_retrieval.get_auxiliary_data(
+        keymap=config, additional_files=["examples/output.para"]
+    )
 
     return 0
 
