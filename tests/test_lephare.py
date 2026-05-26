@@ -32,6 +32,17 @@ flux_cols += [f"mag_{b}_roman" for b in "YJH"]
 flux_err_cols = [f"mag_{b}_lsst_err" for b in "ugrizy"]
 flux_err_cols += [f"mag_{b}_roman_err" for b in "YJH"]
 
+config = lsst_default_config.copy()
+config.update(
+    {
+        "MAG_REF": "2",
+        "ERR_SCALE": "0.02",
+        "FILTER_CALIB": "0",
+        "FILTER_LIST": lsst_default_config["FILTER_LIST"]
+        + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
+    }
+)
+
 
 @pytest.fixture(name="setup_submit_area", scope="module")
 def setup_submit_area(request: pytest.FixtureRequest) -> int:
@@ -56,6 +67,8 @@ def setup_submit_area(request: pytest.FixtureRequest) -> int:
 
     catalog_utils.load_yaml("tests/catalogs.yaml")
     catalog_utils.apply("cardinal_roman_rubin")
+
+    lp.data_retrieval.get_auxiliary_data(keymap=config)
 
     return 0
 
@@ -129,18 +142,6 @@ def run_taskset_1_training_and_estimation(
     """
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
-
-    config = lsst_default_config.copy()
-    config.update(
-        {
-            "MAG_REF": "2",
-            "ERR_SCALE": "0.02",
-            "FILTER_CALIB": "0",
-            "FILTER_LIST": lsst_default_config["FILTER_LIST"]
-            + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
-        }
-    )
-    lp.data_retrieval.get_auxiliary_data(keymap=config)
 
     informer = LephareInformer.make_stage(
         name="inform_lephare",
@@ -237,18 +238,6 @@ def run_taskset_2_training_and_estimation(
     """
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
-
-    config = lsst_default_config.copy()
-    config.update(
-        {
-            "MAG_REF": "2",
-            "ERR_SCALE": "0.02",
-            "FILTER_CALIB": "0",
-            "FILTER_LIST": lsst_default_config["FILTER_LIST"]
-            + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
-        }
-    )
-    lp.data_retrieval.get_auxiliary_data(keymap=config)
 
     informer = LephareInformer.make_stage(
         name="inform_lephare",
