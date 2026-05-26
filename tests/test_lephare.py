@@ -2,9 +2,17 @@ import os
 from pathlib import Path
 import pytest
 
+import numpy as np
+
 from rail.core.data import TableHandle
-from rail.estimation.algos.lephare import LephareInformer, LephareEstimator, lsst_default_config
+from rail.estimation.algos.lephare import (
+    LephareInformer,
+    LephareEstimator,
+    lsst_default_config,
+)
 from rail.utils import catalog_utils
+
+import lephare as lp
 
 from pz_data_challenge.taskset_1 import run_taskset_1
 from pz_data_challenge.taskset_2 import run_taskset_2
@@ -12,16 +20,21 @@ from pz_data_challenge.taskset_2 import run_taskset_2
 from pz_data_challenge import submit_utils
 
 SUBMISSION_NAME: str = "lephare"
-SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/inform_lephare.tgz"
+SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/submit_lephare.tgz"
 
 # don't change these
 SUBMIT_DIR: str = f"submissions/{SUBMISSION_NAME}"
 PUBLIC_AREA: str = "tests/public"
 
+# LePHARE specific globals
+flux_cols = [f"mag_{b}_lsst" for b in "ugrizy"]
+flux_cols += [f"mag_{b}_roman" for b in "YJH"]
+flux_err_cols = [f"mag_{b}_lsst_err" for b in "ugrizy"]
+flux_err_cols += [f"mag_{b}_roman_err" for b in "YJH"]
+
 
 @pytest.fixture(name="setup_submit_area", scope="module")
 def setup_submit_area(request: pytest.FixtureRequest) -> int:
-
     if not os.path.exists(SUBMIT_DIR):
         submit_utils.download_and_extract_tar(SUBMISSION_URL, SUBMIT_DIR)
 
@@ -75,9 +88,13 @@ def run_taskset_1_estimation_only(
     """
     test_data = TableHandle("test", path=test_file)
     estimator = LephareEstimator.make_stage(
-        name="estimate",
+        name="estimate_lephare",
         model=model_file,
         output_mode="return",
+        run_dir=SUBMIT_DIR,
+        bands=flux_cols,
+        err_bands=flux_err_cols,
+        hdf5_groupname="",
     )
     pz_out = estimator.estimate(test_data)
     pz_out.data.ancil["object_id"] = test_data()["object_id"].astype(int)
@@ -113,14 +130,39 @@ def run_taskset_1_training_and_estimation(
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
 
+    config = lsst_default_config.copy()
+    config.update(
+        {
+            "MAG_REF": "2",
+            "ERR_SCALE": "0.02",
+            "FILTER_CALIB": "0",
+            "FILTER_LIST": lsst_default_config["FILTER_LIST"]
+            + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
+        }
+    )
+    lp.data_retrieval.get_auxiliary_data(keymap=config)
+
     informer = LephareInformer.make_stage(
-        name="inform",
+        name="inform_lephare",
+        nondetect_val=np.nan,
+        model="lephare.pkl",
+        hdf5_groupname="",
+        lephare_config=config.copy(),
+        bands=flux_cols,
+        err_bands=flux_err_cols,
+        ref_band="mag_g_lsst",
     )
     model = informer.inform(train_data)
 
     estimator = LephareEstimator.make_stage(
-        name="estimate",
-        model=model,
+        name="estimate_lephare",
+        # nondetect_val=np.nan,
+        model="lephare.pkl",
+        hdf5_groupname="",
+        # aliases=dict(input="test_data", output="lephare_estim"),
+        # use_inform_offsets=False,
+        bands=flux_cols,
+        err_bands=flux_err_cols,
         output_mode="return",
     )
     pz_out = estimator.estimate(test_data)
@@ -157,9 +199,13 @@ def run_taskset_2_estimation_only(
     """
     test_data = TableHandle("test", path=test_file)
     estimator = LephareEstimator.make_stage(
-        name="estimate",
+        name="estimate_lephare",
         model=model_file,
         output_mode="return",
+        run_dir=SUBMIT_DIR,
+        bands=flux_cols,
+        err_bands=flux_err_cols,
+        hdf5_groupname="",
     )
     pz_out = estimator.estimate(test_data)
     pz_out.data.ancil["object_id"] = test_data()["object_id"].astype(int)
@@ -192,14 +238,39 @@ def run_taskset_2_training_and_estimation(
     train_data = TableHandle("train", path=train_file)
     test_data = TableHandle("test", path=test_file)
 
+    config = lsst_default_config.copy()
+    config.update(
+        {
+            "MAG_REF": "2",
+            "ERR_SCALE": "0.02",
+            "FILTER_CALIB": "0",
+            "FILTER_LIST": lsst_default_config["FILTER_LIST"]
+            + ",roman/Roman_WFI.F158.dat,roman/Roman_WFI.F184.dat,roman/Roman_WFI.F213.dat",
+        }
+    )
+    lp.data_retrieval.get_auxiliary_data(keymap=config)
+
     informer = LephareInformer.make_stage(
-        name="inform",
+        name="inform_lephare",
+        nondetect_val=np.nan,
+        model="lephare.pkl",
+        hdf5_groupname="",
+        lephare_config=config.copy(),
+        bands=flux_cols,
+        err_bands=flux_err_cols,
+        ref_band="mag_g_lsst",
     )
     model = informer.inform(train_data)
 
     estimator = LephareEstimator.make_stage(
-        name="estimate",
-        model=model,
+        name="estimate_lephare",
+        # nondetect_val=np.nan,
+        model="lephare.pkl",
+        hdf5_groupname="",
+        # aliases=dict(input="test_data", output="lephare_estim"),
+        # use_inform_offsets=False,
+        bands=flux_cols,
+        err_bands=flux_err_cols,
         output_mode="return",
     )
     pz_out = estimator.estimate(test_data)
