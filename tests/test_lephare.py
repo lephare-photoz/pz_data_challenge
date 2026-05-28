@@ -40,6 +40,8 @@ config.update(
         "FILTER_CALIB": "0",
         "FILTER_LIST": lsst_default_config["FILTER_LIST"]
         + ",roman/Roman_WFI.F106.dat,roman/Roman_WFI.F129.dat,roman/Roman_WFI.F158.dat",
+        "ZPHOTLIB": "LSST_STAR_MAG,LSST_GAL_MAG",
+        "Z_STEP": "0.02,0.,3.",
     }
 )
 
@@ -156,6 +158,10 @@ def run_taskset_1_training_and_estimation(
         bands=flux_cols,
         err_bands=flux_err_cols,
         ref_band="mag_g_lsst",
+        zmin=float(config["Z_STEP"].split(",")[1]),
+        zmax=float(config["Z_STEP"].split(",")[2]),
+        nzbins=1
+        + float(config["Z_STEP"].split(",")[2]) / float(config["Z_STEP"].split(",")[0]),
     )
     model = informer.inform(train_data)
 
@@ -254,6 +260,10 @@ def run_taskset_2_training_and_estimation(
         bands=flux_cols,
         err_bands=flux_err_cols,
         ref_band="mag_g_lsst",
+        zmin=float(config["Z_STEP"].split(",")[1]),
+        zmax=float(config["Z_STEP"].split(",")[2]),
+        nzbins=1
+        + float(config["Z_STEP"].split(",")[2]) / float(config["Z_STEP"].split(",")[0]),
     )
     model = informer.inform(train_data)
 
