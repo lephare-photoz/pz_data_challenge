@@ -20,11 +20,12 @@ from pz_data_challenge.taskset_2 import run_taskset_2
 from pz_data_challenge import submit_utils
 
 # We seem to need more for LePHARE at the current address
-submit_utils._DOWNLOAD_TIMEOUT = 300
+submit_utils._DOWNLOAD_TIMEOUT = 120
+submit_utils._DOWNLOAD_RETRY_DELAY = 30
 
 SUBMISSION_NAME: str = "lephare"
-SUBMISSION_URL: str = "https://www.dropbox.com/scl/fi/fq1mvmt0d4cgb0qs0zbe2/submit_lephare.tgz?rlkey=3kmk5yiu6pqkx4g3vxbtkz41x&st=yrvmegii&e=1&dl=1"
-# SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/submit_lephare.tgz"
+# SUBMISSION_URL: str = "https://www.dropbox.com/scl/fi/fq1mvmt0d4cgb0qs0zbe2/submit_lephare.tgz?rlkey=3kmk5yiu6pqkx4g3vxbtkz41x&st=yrvmegii&e=1&dl=1"
+SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/submit_lephare.tgz"
 
 # don't change these
 SUBMIT_DIR: str = f"submissions/{SUBMISSION_NAME}"
