@@ -19,6 +19,9 @@ from pz_data_challenge.taskset_2 import run_taskset_2
 
 from pz_data_challenge import submit_utils
 
+# We seem to need more for LePHARE at the durrent address
+submit_utils._DOWNLOAD_TIMEOUT = 120
+
 SUBMISSION_NAME: str = "lephare"
 SUBMISSION_URL: str = "https://www.raphaelshirley.co.uk/data/submit_lephare.tgz"
 
